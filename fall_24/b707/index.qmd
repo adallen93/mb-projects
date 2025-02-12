@@ -2,3 +2,17 @@
 title: "Statistical Methods for Learning and Discovery"
 subtitle: "BIOSTAT 707"
 ---
+
+# September
+
+* [Homework 1](./projects/hw1.qmd)
+* [Homework 2](./projects/hw2.qmd)
+
+# October
+
+# November
+
+
+To review notes taken during class, follow [this link](./notes/notes.qmd).
+
+[Back](../../index.qmd)

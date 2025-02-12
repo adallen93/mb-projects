@@ -1,1 +1,7 @@
 /.quarto/
+sandbox
+data/
+*.xlsx
+*.csv
+bigenv
+bsenv

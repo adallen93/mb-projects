@@ -1,11 +1,9 @@
-# BIOSTAT 718 - Homework Assignment 03
+---
+title: "BIOSTAT 718 - HW 3"
+author: "Austin Allen"
+date: "February 16, 2025"
+---
 
-**Due:** Sunday, February 16, 2025  
-
-## Suggested Reading
-
-- **Diggle, Heagerty, Zeger, and Liang**: Chapter 2 (Sections 2.1-2.3) and Chapter 3 (Sections 3.1-3.6)  
-- **Fitzmaurice, Laird, and Ware**: Chapter 3 (Sections 3.1-3.5)  
 
 ## Overview
 
@@ -64,11 +62,4 @@ The dataset, `resp.xlsx`, is saved in **long format** and is available in **Data
 2. **Did the correlated data impact statistical inference** on the associations between the odds of respiratory infection and age? If so, in what way?  
 
 ---
-
-## Submission Instructions
-
-- Provide **thorough answers** using **complete sentences and explanations**.  
-- **Deadline:** Sunday, February 16, 2026, by **11:59 pm**.  
-- **Submission:** Upload your assignment to **Canvas**.  
-- **Format:** Save your work in **MS Word format** (for editing).  
 

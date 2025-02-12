@@ -1,0 +1,12 @@
+{
+    "diffEditor.ignoreTrimWhitespace": true,
+    "[python]": {
+        "editor.formatOnSave": false,
+        "editor.defaultFormatter": "charliermarsh.ruff",
+    },
+    "editor.rulers": [
+        79
+    ],
+    "python.REPL.enableREPLSmartSend": false,
+    "git.ignoreLimitWarning": true
+}
