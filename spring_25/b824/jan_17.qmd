@@ -1,0 +1,44 @@
+---
+title: "Week 2: January 17, 2025"
+---
+
+
+## General Principles in Data Analysis
+
+- Observed data = signal of interest + technical effect + random effect
+- It is important to understand the potential technical effects present in the data
+- Performing exploratory data analysis (EDA) is crucial before designing statistical and computational models.
+- Examples of EDA include visualizing the distribution of the outcome variable to identify outliers or determine if a log transformation is needed
+
+## Batch effect: a common technical effect 
+
+- In gene expression data, batch effect is a huge problem. In a nutshell, there's typically a high correlation between sequence data collected on the same day
+  - Some reasons: 
+    - Different machines used on different days
+    - Different ways of preparing samples for analysis
+  - How to mitigate this: 
+    - Make sure you sample from your exposure of interest and your reference group on the same day
+  - This is a problem for any type of high-throughput sequencing data
+
+## Goal of data processing in scRNA-seq
+
+- To obtain: (1) a properly normalized and transformed gene expression matrix for future use, and (2) the cell types of each cell or continuous trajectories of cells
+- Differences across cell types dominate the variance in the data
+- After identifying cell types, it becomes easier to decompose the observed data into variance across cell types and variance within each cell type
+- This can be thought of as a hierarchical model: first, the cell type of a cel is determined, and then variations are added to the cell based on the state
+  - Example: 
+    - Step 1: Decide the cell type (e.g. immune cell, cancer cell, epithelial cell etc.)
+    - Step 2: Decide the state within a cell type (e.g. activated immune cell vs. quiescent immune cell)
+    - There is much more variance between cell type compared to cell state. When you add these variances, you get the observed data
+
+## Standard processing tools for scRNA-seq 
+
+- R: Seurat
+- Python: Scanpy
+
+## Seurat loading data
+
+We start by reading in hte data. The Read10X() function reads in the output of the cellaranger pipeline from 10x, returning a unique molecular identified (UMI) count matrix. The values in this matrix represent the number of molecules for each feature (i.e. gene; row) that are detected in each cell (column). Note that more recent versions of cellranger now also output using the h5 file format, which can be read in using th Read10X_h5() function in Seurat. 
+
+We next use the count matrix to create a Seurat object. The object serves as a container that contains both data (like the count matrix) and analysis (like PCA, or clustering results) for a single-cell dataset. For more information, check out the [Seruat object interaction vignette], or the Github Wiki. 
+

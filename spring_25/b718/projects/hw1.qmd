@@ -1,0 +1,104 @@
+---
+title: "BIOSTAT 718 - Homework Assignment 1"
+author: "Austin Allen"
+date: "January 19, 2025"
+---
+
+## Part 1 
+
+Find a published scientific article of interest to you that exhibits correlated data. Read the article andanswer the following questions.
+
+> I chose to evaluate the article, "Repeated cold-water immersion improves autonomic cardiac modulation following five sessions of high-intensity interval exercise" by Malta et al. [1]. 
+
+a. What was the primary scientific question?
+    - Does repeated cold-water immersion improve physical recovery following high-intensity interval training (HIIT) in healthy men compared to no cold-water immersion? 
+
+b. What was the study design? Did it involve random sampling from a population, cluster sampling, no sampling? Were repeated measurements taken on individual subjects? What feature(s) of the study design resulted in correlated data?
+    - Study design: Randomized controlled trial. 11 participants were randomly assigned to the treatment arm (cold-water immersion following exercise), while 10 were randomly assigned to the control arm (passive recovery at room temperature).
+    - Sampling: 21 healthy and moderately active men were sampled from the population. There was no cluster sampling, and all 21 participants were independent of each other.
+    - Repeated measures: Yes, repeated measures were taken on individual subjects. Each participant visited a laboratory eight times over a three-week period. The first and second visits were to inform subjects of the study procedures and to collect baseline measurements for resting heart-rate variability (HRV), countermovement jumps (CMJ), various blood markers associated with muscle health. Visits 3-8 were to collect repeated measures for CMJ and resting HRV, followed by a session of HIIT. The 8th visit also included a final blood sample to evaluate the biomarkers at the end of the study. Thus, the only repeated measures were HRV and CMJ for visits 2-8 (baseline to end of study). 
+    - Correlated features: The outcome measurements related to post-exercise recovery (HRV and CMJ) were correlated at the participant level. That is to say that paricipant i's measurements for HRV and CMJ across all time points were correlated with one another.
+
+c. Name the primary outcome variable? What type of outcome is it? (binary, ordinal, …)
+    - The investigators measured the following co-primary outcomes:
+      - HRV: This is a continuous variable representing the variability in heart rate.
+      - CMJ: Although this is still a little fuzzy to me, my take-away is that this is a continuous variable measured using an algorithm built by the researchers. As participants jumped on a steel plate, various measurements were taken (e.g. force, jump height etc.), and these are what constitue the CMJ
+      - Biomarkers:
+        - CK: Creatinine kinase is a continuous measurement of a biomarker assoicated with muscle stress
+        - LDH: Lactate dehydrogenage is also a continuous measurement associated with muscle stress
+      - Perceived Internal Load: A 10-point scale labeling a participant's perceived exertion during the exercise session was recorded by the participant at the end of each visit. This "number" was multiplied by the number of minutes spent during the exercise session to create a continuous outcome representing perceived load. However, I will note that I have some personal reservations as to the efficacy of this conversion of an ordinal or latent variable to a continuous outcome. 
+
+d. What is the primary sampling unit (psu)? How many are there? Were all the psu’s observed or
+did some have missing data?
+    - The primary sampling unit (PSU) was the participant. 
+    - There were 21  participants in all.
+    - There is no mention of missing data or dropout, so I assume all PSUs were observed. 
+
+e. What were the elementary units (eu) or sub-units? How many are there in total?
+    - The EU was the laboratory visit number from 2-8. There were 7 repeated measures. 
+
+f. Is the number of units the same in each cluster (i.e., ni = n) without accounting for missing
+responses? If missing responses are accounted for?
+    - Yes, the number of units is the same in each cluster (i.e. for each participants). All participants were measured 7 times with no missing responses.
+
+g. Did the authors state the magnitude of the within-cluster correlation (ρ)? If yes, what is it? If not, what value would you guess for ρ? Why? Is it reasonable that the correlation would be positive or negative?
+    - The authors did not give the within-cluster correlation ($\rho$). However, it seems reasonable that a participant's performance would hold relatively stable over such a short period (three weeks). For that reason, I assume that the correlation is very high, likely above 0.9. I would only expect a positive correlation. 
+
+h. How did the correlation arise? What mechanism do you think caused the correlation?
+    - The correlation arises because a participant is likely to perform at a similar level to his previous performance. There will probably be some variability, but I expect the within-group variability to be much smaller than the between-group variability.
+
+i. Name one factor of interest to the investigators. (You can choose a treatment factor or a covariate.) Does this factor characterize units with the cluster or does it characterize an entire cluster (i.e., all the objects within a cluster have the same value of the factor)?
+    - The treatment factor is cold-water immersion (CWI). For each participant, this was identical across all elementary units (lab visits), so this characterizes an entire "cluster."
+
+j. State the population characteristic of primary interest to the investigators (e.g., mean, prevalence, odds ratio, etc.)
+    - The researchers were primarily interested in the mean values of each of the continuous co-primary outcomes listed above (HRV, CMJ, CK, LDH, perceived internal load). 
+
+k. Name the primary analysis reported in the paper. Did this analysis account for the correlation in the outcomes?
+    - The statistical analyses section states that the authors used a mixed linear model for each of the repeated endpoints (HRV, CMJ, internal load) considering time (i.e. visits) and groups (CWI and control) as fixed effects and subjects as random effects. In this case, the analysis does account for the correlation of each outcome. 
+
+l. Were there any points regarding the design or analysis that were obscure to you?
+    - I excluded a portion of the paper that spoke of measuring participants' oxygen intake. This didn't seem to resolve into any of the reported outcomes.
+    - I am still unsure as to how CMJ was recorded. I assume all metrics (force, jump height etc.) were pooled into a single metric, but this is unclear from the paper.
+    - I mentioned this previously, but the creation of the "perceived internal load" seems suspect to me. I would have preferred this to be handled as a latent outcome with some sort of ordinal regression involved.
+
+## Part 2
+
+Consider the variance inflation factor: VIF = 1 + (n-1) ρ. (See Lecture Notes 2.)
+
+a. For what value of ρ is VIF largest? For this value of ρ, what is the value of VIF, and what, therefore, is the variance of $\bar{Y_i}$? What, then is the “effective sample size,” i.e., the sample size for uncorrelated outcomes that would give the same value for the variance?
+
+> We can see that higher values of $\rho$ lead to a higher VIF. The range for $\rho$ is $-1 \le \rho \le 1$, which means a value of 1 yields the highest VIF. Let's calculate the VIF when $\rho = 1$:
+
+\begin{align*}
+VIF &= 1 + (n - 1)\rho\\
+&= 1 + (n - 1)(1)\\
+&= 1 - 1 + n\\
+&= n
+\end{align*}
+
+> The variance of $\bar{Y_i}$ is calculated as follows:
+
+
+\begin{align*}
+Var(\bar{Y_i}) &= \frac{\sigma^2}{n}VIF\\
+&= \frac{\sigma^2}{n}n\\
+&= \sigma^2\\
+\implies Var(\bar{Y_i}) &= Var(Y_i)
+\end{align*}
+
+
+> I believe that the "effective sample size" is the number of clusters required to yield the same variance as $Var(\bar{Y_i})$. Since $Var(\bar{Y_i}) = Var(Y_i) = \sigma^2$, I believe the effective sample size is 1. 
+
+
+b. For what value of ρ is VIF equal to 1? For this situation, what is the variance of $\bar{Y_i}$? What is the “effective sample size” here? For what value of ρ is VIF less than 1? What is the minimum value of VIF? (Hint: What is the minimum value of the variance of the cluster means?)
+
+> When $\rho = 0$ (i.e. no correlation), $VIF = 1$. The variance is $\frac{\sigm^2}{n}$, which means the effective sample size is $n$. 
+>
+> For any value of $\rho < 0$, the VIF will be less than 1. Because the lowest value of $\rho$ is $-1$, we can have a VIF as low as $2 -n$. This implies that the minimum value of the variance of the cluster means is $Var(\bar{Y_i})_{\text{min}} = 2\frac{\sigma^2}{n} - \sigma^2$.
+
+
+
+## References
+
+
+1. Malta, E. S., Lopes, V. H. F., Esco, M. R., & Zagatto, A. M. (2023). Repeated cold-water immersion improves autonomic cardiac modulation following five sessions of high-intensity interval exercise. European Journal of Applied Physiology, 123(8), 1939–1948. https://doi.org/10.1007/s00421-023-05205-4

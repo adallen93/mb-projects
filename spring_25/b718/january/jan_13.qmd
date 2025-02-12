@@ -1,0 +1,152 @@
+---
+title: "Week 2: January 13"
+---
+
+## Purpose of Statistics
+
+* Statistcs is about science
+* Proving things to people
+  * The validity of any proof rests solely on the willingness of the audience to believe *
+
+## First stage of scientific investigation 
+
+- Hypothesis generation
+  - Observations
+    - Measurement of existing populations
+    - Disadvantages
+      - Confounding
+      - Limited ability to establish cause and effect
+
+## Further stages of investigation
+
+- Refinement and confirmation of hypotheses
+- Experiment
+  - Intervention
+  - Elements of experiment
+    - Overall goal
+    - Specific aims (hypotheses)
+    - Materials and methods
+    - Data collection 
+    - Analysis
+    - Interpretation: refinement of hypotheses
+
+## Do you need statistics?
+
+- A two question test (both must be YES)
+  - In a deterministic world, do you know how to answer your question?
+    - Is the question answerable in the real world?
+    - How do you use a number to answer the scientific question?
+  - In a world subject to variation and uncertainty, do you now how you would answer your question if you had measured the entire population?
+
+## Statistics uses
+
+- Uses numbers to address scientific questions
+  - Describe general tendencies and trends
+    - Average age, average serum sodium, median salary
+  - Quantifies our knowledge about scientific laws
+
+## Scientific method: key elements
+
+- Overall goal
+- Specific aims (hypotheses)
+- Materials and methods
+- Collection of data
+- Analysis
+- Interpretation
+
+## Statistical tasks
+
+- understand overall goal
+- Refine specific aims (statistical hypothese)
+- Materials
+
+## Classification of Questions
+
+### General classification
+
+- Ordered for typical use in new are of science
+  - Clustering of observations
+  - Clustering of variables
+  - Quantification of distributions (characteristics)
+  - Comparing distributions (associations)
+  - Predictions (of individual observations)
+
+## Purpose of descriptive statistics
+
+- Detect errors in the data
+  - Missing data, mis-coded values
+- Describe the materials and methods used
+  - Sampling scheme (scientific sample, case series, convenience sample etc.)
+- Assess conditions that might alter analysis methods
+  - Modeling interactions (effect modification)
+  - Adjusting for confounding
+  - Adjusting for variables that provide additional precision
+
+## Misc
+
+- Power is the ability of a statistical test can find significant results
+  - $1 - \beta$. $\beta$ is the probability of failing to reject the null hypothesis given that the alternative hypothesis is true.
+- The p-values are like adjectives. They should be included **with** the other important statistical summaries (confidence intervals, estimates, etc.)
+- What are the three things we should always report? 
+  - I think he wants 1) point estimates, 2) confidence intervals, and 3) p-values. However, I would add a fourth item: 4) decision based on the results.
+
+# Introduction to Longitudinal Data Analysis
+
+- data types
+  - Univariate dta
+    - The sample units (e.g., subject, patient) yields a single measurement or response
+  - Multivariate data
+    - Sampled units provides multible different responses
+
+## How does correlation happen?
+
+- Question: Are observations intrinsically related to other observations?
+  - Cluster or multi-level sampling
+    - School or community based randomized interventions
+    - Family studies
+    - Complex survey samples
+  - Repeated measures on the same subject
+    - Longitudinal (over time) studies
+  - Multivariate outcomes
+    - $FEV_1$ and $FVC$ considered simultaneously as an outcome for pulmanry function
+  - Contagion: One outcome may directly affect another
+    - Infection: correlated in families ecause it is transmitted more easily
+    - air pollution
+  - Intrinsic correlation (non-random samples)
+    - Time series
+
+## Benefits of longitudinal data analysis
+
+- Longitudinal study: subjects are usually measured repeatedly over time
+- Cross-section (independent data) study: a single outcome is measured for each subject
+- In longitudinal data analysis (LDA), we can investigate:
+  - Temporal changes within individuals (age effects)
+  - Differences between subjects in tehir baseline levels (cohort effects)
+  - With independent data, we can only investigate cohort effects, ageing effects are not separately identifiable
+- LDA requires special statistical methods because observations tend to be correlated within individuals
+  - Methods you have probably learned (until today) were for independent data
+
+# January 15
+
+
+## Why longitudinal data analysis methods?
+
+- The repeated observations on a subject, ($Y_i1,, Y_i2, .., y_in$) are very likely to be correlated
+  - The assumption of independent observations will be violated
+- Using (independent data) regression techniques may have problems
+  - Precision estimates (standard errors) will be biased
+  - Mean parameters will often be inefficiently estimated
+  - Inference (tests) will be incorrect
+  - Correlation may be of scientific interest (and will be ignored)
+- Note: a sample unit or cluster is something like a family, a school, a hospital etc. that is a cluster of observations
+
+## Ignoring Correlation
+
+- Question: What are the effects?
+  - On estimated means, rates (prevalence, incidence), regression coefficients or the precision of the estimates?
+  - Estimated means: none. Why?
+    - Let $Y_{ij}$ be the outcome on the $j_{th}$ unit in the $i_{th}$ cluster. Let I be the total number of clusters. Assume all clusters have the same number of units ($n_1 = n_2 = ... = n_I = n$), all observations within a cluster have the same mean, $E[Y_{ij}] - \mu_i$ and there is a common variance among all observations, $V[Y_{ij}] = \sigma^2$. 
+    - Stuff happens. Turns out the estimators for $\beta$ are unbiased.
+  - Estimated variance (precision). 
+    - Math happens. Turns out that $V[\bar{Y_i}] = \frac{\sigma^2}{n}\times\left[1 + \rho(n - 1)\right]$. The right-hand side of this is the variance inflation factor.
+

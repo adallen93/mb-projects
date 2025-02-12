@@ -1,0 +1,360 @@
+---
+title: "BIOSTAT 718 - Homework 2"
+author: "Austin Allen"
+format:
+  html:
+    code-fold: true
+---
+Crouse (Am J Cardiol, 2001) noted that intima-media thickness (IMT) of the carotid
+arteries is a generalized index of atherosclerotic disease. Previous investigators (Spence
+JD, Am J Cardiol 2002; Folsom AR, Stroke 1993; Howard G, Stroke 1993) have reported
+that IMT ranges between 0.5 to 1 mm in the general population and increases
+approximately 0.010 to 0.018 mm/year. Higher values of IMT are associated with more
+diseased arteries and cardiovascular events. These investigators and others have noted that
+lifestyle changes or medications may slow, arrest or induce regression in IMT.
+An investigation of an experimental statin – a medication for individuals at high risk of
+having cardiovascular disease events (e.g., myocardial infarction, stroke) – was conducted
+to evaluate the effect of the drug on intima-media thickness (IMT) of the carotid arteries
+over a one-year period. In the prospective interventional study, approximately 2000 older
+patients (ages between 65-95 years) were randomized equally in a blinded fashion to
+receive either 40 mg of an experimental statin or a placebo. Treatments were administered
+daily for a year.
+
+The intima-media thickness (IMT) of the common carotid arteries were measured by
+ultrasonography and were collected at two times for the study: prior to the drug or placebo
+administration (Year 0), and one year later (Year 1).
+
+The data are provided in an Excel file imtdata.xlsx on the class website. The study
+variables are:
+
+* id: subject id number
+* trt: statin treatment (0=placebo, 1=40 mg experimental statin)
+* age: age of subject in years
+* imt0: IMT measurement at Year 0 (baseline)
+* imt1: IMT measurement at Year 1 (end of study)
+* imtdif: difference in one-year IMT measurements
+* male: male sex (0=female, 1=male)
+* smk: current smoking status (0=No, 1=Yes)
+
+The dataset is formatted with one record per patient. There are no missing values.
+
+
+# Question 1
+
+Please investigate whether there is a treatment effect for the experimental statin by considering three models for the study endpoint (outcome):
+
+* POST: Year 1 IMT outcome (IMT1)
+* CHANGE: Difference in Year 1 and Year 0 outcomes (IMT1 – IMT0)
+* ANCOVA: Year 1 IMT outcome, adjusting for Year 0 IMT outcome
+
+### Part a
+
+ Fit separate models for POST, CHANGE, and ANCOVA versus the treatment indicator variable (trt: 0=placebo, 1=40 mg statin). Summarize the key estimates in a single table. Report the results in three short, separate paragraphs (one paragraph for each model). Please be sure to interpret your estimates, interval estimates, and provide p-values and your decisions.
+
+> I'm going to do this a little backwards. I'm going to provide the coefficient summaries for each of the models in a combined table, then I will provide an explanation for each model in three separate sections below. 
+
+> **Coefficient Summary Table**
+
+
+```{python}
+import pandas as pd
+import statsmodels.formula.api as smf
+
+# Load in the data
+imt = pd.read_excel("imtdata.xlsx")
+
+# ----------
+# Question 1
+# ----------
+
+# Part A
+# ------
+
+# Post model
+# Model to specify: imt1 = \beta_0 + \beta_1 trt + \epsilon
+
+# First prepare the features, noting that 'trt' needs to be converted to
+# a catgorical variable
+imt["trt"] = imt["trt"].astype("category")
+
+# Build the post model
+post_model = smf.ols("imt1 ~ trt", data=imt).fit()
+
+# Change model
+# Model to specify: imt1 - imt0 = \beta_0 + \beta_1 trt + \epsilon
+
+# Let's build the features and targets for this model. Note that
+# the features for the post and the change are identical
+imt["y_change"] = imt["imt1"] - imt["imt0"]
+
+
+# Build the change model
+change_model = smf.ols("y_change ~ trt", data=imt).fit()
+
+# ANCOVA model
+# Model to specify: imt1 = \beta_0 + \beta_1 trt + \beta_2 imt0 + \epsion
+
+# No new features need to be added to this model, so our existing DF is
+# in good shape
+
+# Build the ANCOVA model
+ancova_model = smf.ols("imt1 ~ trt + imt0", data=imt).fit()
+
+# Coefficient table
+
+# Post
+post_df = pd.DataFrame(post_model.params)
+post_df["std.err"] = post_model.bse
+post_df["lower"] = post_df.iloc[:, 0] - 1.96 * post_df["std.err"]
+post_df["upper"] = post_df.iloc[:, 0] + 1.96 * post_df["std.err"]
+post_df["95.pct.interval"] = post_df.apply(
+    lambda row: f"[{round(row['lower'], 3)}, {round(row['upper'], 3)}]", axis=1
+)
+post_df.drop(columns=["lower", "upper"], inplace=True)
+post_df["pvalues"] = post_model.pvalues
+post_df["model"] = "Post"
+post_df.reset_index(inplace=True)
+post_df.columns = pd.Index(
+    [
+        "Term",
+        "Estimate",
+        "Standard Error",
+        "95% Confidence",
+        "p-value",
+        "Model",
+    ]
+)
+
+# Change
+change_df = pd.DataFrame(change_model.params)
+change_df["std.err"] = change_model.bse
+change_df["lower"] = change_df.iloc[:, 0] - 1.96 * change_df["std.err"]
+change_df["upper"] = change_df.iloc[:, 0] + 1.96 * change_df["std.err"]
+change_df["95.pct.interval"] = change_df.apply(
+    lambda row: f"[{round(row['lower'], 3)}, {round(row['upper'], 3)}]", axis=1
+)
+change_df.drop(columns=["lower", "upper"], inplace=True)
+change_df["pvalues"] = change_model.pvalues
+change_df["model"] = "Change"
+change_df.reset_index(inplace=True)
+change_df.columns = pd.Index(
+    [
+        "Term",
+        "Estimate",
+        "Standard Error",
+        "95% Confidence",
+        "p-value",
+        "Model",
+    ]
+)
+
+# ANCOVA
+ancova_df = pd.DataFrame(ancova_model.params)
+ancova_df["std.err"] = ancova_model.bse
+ancova_df["lower"] = ancova_df.iloc[:, 0] - 1.96 * ancova_df["std.err"]
+ancova_df["upper"] = ancova_df.iloc[:, 0] + 1.96 * ancova_df["std.err"]
+ancova_df["95.pct.interval"] = ancova_df.apply(
+    lambda row: f"[{round(row['lower'], 3)}, {round(row['upper'], 3)}]", axis=1
+)
+ancova_df.drop(columns=["lower", "upper"], inplace=True)
+ancova_df["pvalues"] = ancova_model.pvalues
+ancova_df["model"] = "ANCOVA"
+ancova_df.reset_index(inplace=True)
+ancova_df.columns = pd.Index(
+    [
+        "Term",
+        "Estimate",
+        "Standard Error",
+        "95% Confidence",
+        "p-value",
+        "Model",
+    ]
+)
+
+# Full table
+coefficient_table = pd.concat([post_df, change_df, ancova_df])
+coefficient_table
+ ```
+
+
+> **Post Model** 
+
+> The post model is the model that only considers the outcome at timepoint t=1. The formula for this model is $Y_{i1} = \beta_0 + \beta_1X_i + \epsilon_i$. Here are the coefficient interpretations:
+> - Intercept: The intercept is the expected (or average) IMT measurement at timepoint 1 when 'trt' = 0, i.e. it is the mean IMT measurement for the placebo group at timepoint 1. This is not particularly interesting. The value of the point estimate is 1.05 and the 95% conficence is [1.036, 1.064] (p < 0.05). The p-value is not meaningful because we don't care if the mean IMT for the placebo group is significantly different from 0 because it doesn't make clinical sense for it to be 0.
+> - trt: The 'trt' variable is the variable associated with the treatment group. The estimate -0.039 is the expected change in IMT between the treatment and control groups. Thus, we expect that on average, participants receiving statin have 0.039 units lower IMT measurements at timepoint 1 compared to participants in the control group. The 95% confidence interval is [-0.059, -0.02] (p < 0.05). This indicates that the change is significantly different than 0. This is an important result. 
+
+> **Change Model** 
+
+> The change model is the model that considers the outcome as the difference of timepoint 1 and timepoint 0 (i.e. change from baseline). The formula for this model is $(Y_{i1} Y_{i0}) = \beta_0 + \beta_1X_i + \epsilon_i$. Here are the coefficient interpretations:
+> - Intercept: The intercept is the expected (or average) change in IMT measurement from baseline to timepoint 1 for the placebo group. This can be useful knowledge, as we may be interested to know if those in the placebo group are experiencing an increase in IMT measurements. The value of the point estimate is 0.01 and the 95% conficence is [0.0, 0.023] (p < 0.05). The first thing to note is that our point estimate is in the range provided in the accompanying literature, which is what we expect for those not receiving treatment. The lower bound is not exactly zero but it is close to zero. There is a significant increase in IMT over time for those not being treated with statin. 
+> - trt: The estimate -0.032 is the expected change in IMT baseline to t1 changes between the treatment and control groups. This estimate suggests we would expect the IMT change in a person treated with statin to be 0.032 mm lower than for a person not treated with statin. The 95% confidence interval is [-0.048, -0.017] (p < 0.05). This indicates that the change is significantly different than 0. 
+>
+> > **ANCOVA Model** 
+
+> The ANCOVA model is the model that considers the outcome as timepoint 1 while adjusting for timepoint 0 as a covariate. The formula for this model is $Y_{i1} = \beta_0 + \beta_1X_i + \beta_2 Y_{i0} + \epsilon_i$. Here are the coefficient interpretations:
+> - Intercept: The intercept is not really interpretable. It is the expected (or average) IMT measurement at timepoint 1 for the placebo group when the baseline value is 0. This is not interpretable because the baseline shouldn't ever be equal to 0. The value of the point estimate is 0.319 and the 95% conficence is [0.279, 0.359] (p < 0.05). The p-value and confidence interval are not of much interest.
+> - trt: This coefficient is the effect of statin on IMT at timepoint 1, adjusting for baseline measrements. The estimate -0.034 is the expected change in IMT between the treatment and control groups, adjusting for baseline. Thus, we expect that on average, participants receiving statin have 0.034 units lower IMT measurements at timepoint 1 compared to participants in the control group, holding baseline constant. The 95% confidence interval is [-0.049, -0.02] (p < 0.05). This indicates that the change is significantly different than 0. This is important. 
+
+
+
+### Part b 
+
+Do any of the models provide valid estimates of a treatment effect? Please explain why or why not.
+
+> Yes, all three models provide valid estimates, but they reflect different aspects of the treatment effect. The post model is useful but doesn’t control for baseline differences, the change model offers a treatment effect on changes, and the ANCOVA model provides the most precise and useful estimate by controlling for baseline IMT levels. Each has its strengths, but I think the ANCOVA model is the most reliable for understanding the treatment's effect while accounting for baseline measurements.
+
+### Part c 
+
+For a pre-planned analysis to investigate the scientific question under the described study design, please state which model you would have used to investigate the question and justify your chosen model. (You can only choose one of the three.)
+
+> As I described in part b, the ANCOVA model does a great job of providing insights into the effect of statin on IMT measurements while adjusting for baseline. We also learned in class that of the three models, the ANCOVA model provides the most precise estimates. For these reasons, ANCOVA is my choice.
+
+## Question 2
+
+One of the study investigators asked you, the study biostatistician, to perform analyses like the ones in Question 1. You are asked to determine whether IMT differs by sex. You are asked to fit the POST, CHANGE, and ANCOVA models noted above, but substituting in the male sex indicator variable (male: 0=female, 1=male) in place of the treatment indicator variable (trt: 0=placebo, 1=40 mg statin).
+
+### Part a 
+
+Fit separate models for POST, CHANGE, and ANCOVA as prescribed. Summarize
+the key estimates in a single table.
+
+> As in question 1, I have compiled all coefficient estimates and summaries into a single table. Here it is below:
+
+```{python}
+# Part B
+# ------
+
+# Post model
+# Model to specify: imt1 = \beta_0 + \beta_1 male + \epsilon
+
+# First prepare the features, noting that 'male' needs to be converted to
+# a catgorical variable
+imt["male"] = imt["male"].astype("category")
+
+# Build the post model
+post_model = smf.ols("imt1 ~ male", data=imt).fit()
+
+# Change model
+# Model to specify: imt1 - imt0 = \beta_0 + \beta_1 male + \epsilon
+
+# Let's build the features and targets for this model. Note that
+# the features for the post and the change are identical
+imt["y_change"] = imt["imt1"] - imt["imt0"]
+
+
+# Build the change model
+change_model = smf.ols("y_change ~ male", data=imt).fit()
+
+# ANCOVA model
+# Model to specify: imt1 = \beta_0 + \beta_1 male + \beta_2 imt0 + \epsion
+
+# No new features need to be added to this model, so our existing DF is
+# in good shape
+
+# Build the ANCOVA model
+ancova_model = smf.ols("imt1 ~ male + imt0", data=imt).fit()
+
+# Coefficient table
+
+# Post
+post_df = pd.DataFrame(post_model.params)
+post_df["std.err"] = post_model.bse
+post_df["lower"] = post_df.iloc[:, 0] - 1.96 * post_df["std.err"]
+post_df["upper"] = post_df.iloc[:, 0] + 1.96 * post_df["std.err"]
+post_df["95.pct.interval"] = post_df.apply(
+    lambda row: f"[{round(row['lower'], 3)}, {round(row['upper'], 3)}]", axis=1
+)
+post_df.drop(columns=["lower", "upper"], inplace=True)
+post_df["pvalues"] = post_model.pvalues
+post_df["model"] = "Post"
+post_df.reset_index(inplace=True)
+post_df.columns = pd.Index(
+    [
+        "Term",
+        "Estimate",
+        "Standard Error",
+        "95% Confidence",
+        "p-value",
+        "Model",
+    ]
+)
+
+# Change
+change_df = pd.DataFrame(change_model.params)
+change_df["std.err"] = change_model.bse
+change_df["lower"] = change_df.iloc[:, 0] - 1.96 * change_df["std.err"]
+change_df["upper"] = change_df.iloc[:, 0] + 1.96 * change_df["std.err"]
+change_df["95.pct.interval"] = change_df.apply(
+    lambda row: f"[{round(row['lower'], 3)}, {round(row['upper'], 3)}]", axis=1
+)
+change_df.drop(columns=["lower", "upper"], inplace=True)
+change_df["pvalues"] = change_model.pvalues
+change_df["model"] = "Change"
+change_df.reset_index(inplace=True)
+change_df.columns = pd.Index(
+    [
+        "Term",
+        "Estimate",
+        "Standard Error",
+        "95% Confidence",
+        "p-value",
+        "Model",
+    ]
+)
+
+# ANCOVA
+ancova_df = pd.DataFrame(ancova_model.params)
+ancova_df["std.err"] = ancova_model.bse
+ancova_df["lower"] = ancova_df.iloc[:, 0] - 1.96 * ancova_df["std.err"]
+ancova_df["upper"] = ancova_df.iloc[:, 0] + 1.96 * ancova_df["std.err"]
+ancova_df["95.pct.interval"] = ancova_df.apply(
+    lambda row: f"[{round(row['lower'], 3)}, {round(row['upper'], 3)}]", axis=1
+)
+ancova_df.drop(columns=["lower", "upper"], inplace=True)
+ancova_df["pvalues"] = ancova_model.pvalues
+ancova_df["model"] = "ANCOVA"
+ancova_df.reset_index(inplace=True)
+ancova_df.columns = pd.Index(
+    [
+        "Term",
+        "Estimate",
+        "Standard Error",
+        "95% Confidence",
+        "p-value",
+        "Model",
+    ]
+)
+
+# Full table
+coefficient_table = pd.concat([post_df, change_df, ancova_df])
+coefficient_table
+```
+
+### Part b 
+
+Interpret the estimated regression coefficient for the male sex variable for each of the three models fitted in part (a). Are the estimates approximately the same in magnitude? Are the interpretations the same for the three models? Please explain why or why not.
+
+> The format for this response will be similar to Question 1, part a, but I will focus solely on the 'male' coefficient. 
+>
+> **Post Model**
+>
+> - Interpretation: The point estimate is 0.093, with a 95% confidence interval of [0.075, 0.113] (p < 0.05). This suggests that on average, men have a timepoint 1 reading of IMT that is 0.093 mm higher than women. This result is significant. 
+> 
+> **Change Model**
+>
+> - Interpretation: A point estimate of 0.011 suggests that men, on average, see a higher change in IMT readings from baseline to timepoint 1. However, this result is not significant. The 95% confidence interval is [-0.004, 0.028] (p-value > 0.05). This indicates that the effect of sex on the change in IMT from baseline to timepoint 1 is not significant. 
+> 
+> **ANCOVA Model**
+>
+> - Interpretation: The point estimate of 0.037 suggests that men have an average IMT at timepoint 1 that is 0.037 higher than the average for women, adjusting for baseline values of IMT. The 955 confidence interval is [0.022, 0.053] (p-value < 0.05) indicating a significant result.
+>
+> Next, I will discuss the posed questions:
+>
+> - "Are the estimates approximately the same in magnitude?" Not really. The values are relatively close, but the estimate for the post model is roughly 9 times higher than that of the change model (the ANCOVA model estimate is somewhere in the middle). This is likely due to what we discussed in Question 1 part b. These estimates are different ways of looking at how sex affects IMT, so we can't expect them to be the same. 
+> - "Are the interpretations the same for the three models? Why or why not?" Again, the interpretations are **not** the same, and this is for the reason described in the last bullet point. These three models look at the effect of sex on IMT in different ways, so we interpret them differently. 
+
+### Part c  
+
+If the study investigator who asked you to perform the analyses mentioned their objective was to learn if IMT differs over time by sex, would the three models be acceptable to address the investigator’s objective? If not, which model or models would be most appropriate? Briefly explain.
+
+> No, not all three models are equipped to answer this question. I believe that the change model is the most appropriate to answer this question because it's looking at a change over time by sex. We would need to do some fancy maneuvering to get the ANCOVA model into ship-shape (probably including interaction terms etc.), and the post-model doesn't even consider time. So I'm going to say that the change model is the most appropriate for this scenario. 

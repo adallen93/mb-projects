@@ -1,0 +1,481 @@
+---
+title: "BIOSTAT 724 - Homework 1"
+author: "Austin Allen"
+output:
+  pdf_document:
+    latex_engine: xelatex
+---
+
+## Problem 1
+
+In answering a question on a multiple-choice test,
+a student either knows the answer or guesses. Let p be the
+probability that the student knows the answer and 1- p the
+probability that the student guesses. Assume that a student
+who guesses at the answer will be correct with probability
+1/m, where m is the number of multiple-choice alternatives.
+What is the conditional probability that a student knew the
+answer to a question, given that he or she answered it
+correctly? What happens when m is very large? What
+happens when p is close to 0?
+
+> Let's solve this using Baye's Theorem. First, it'll be helpful to define some terms:
+>
+> - $P(\text{Knows}) = p$
+> - $P(\text{Guess}) - 1 - p$
+> - $P(\text{Correct | Guess}) = \frac{1}{m}$
+> - We want to know $P(\text{Knows | Correct})$
+
+
+\begin{align*}
+P(\text{Knows | Correct}) &= \frac{P(\text{Correct | Knows})P(\text{Knows})}{P(\text{Correct | Knows})P(\text{Knows}) + P(\text{Correct | Guess})P(\text{Guess})}\\
+&= \frac{(1)(p)}{(1)(p) + (\frac{1}{m})(1 - p)}\\
+&= \frac{p}{p + \frac{1 - p}{m}}\\
+\end{align*}
+
+> We can see from this result that as m gets arbitrarily large, the denominator approaches p and the probability goes to 1. This aligns with our intuition because a correct guess among a larger number of choices would be less likely. Likewise, if p is close to 0, the probability is also close to zero.
+
+## Problem 2
+
+Suppose urn H is filled with 40% green balls and
+60% red balls, and urn T is filled with 60% green balls and
+40% red balls. Someone will flip a coin and then select a
+ball from urn H or urn T depending on whether the coin
+lands heads or tails, respectively. Let X be 1 or 0 if the coin
+lands heads or tails, and let Y be 1 or 0 if the ball is green
+or red.
+
+
+
+### Part a
+
+Write out the joint distribution of X and Y in a table.
+
+```{r echo = FALSE}
+
+# Define the joint probability table
+df <- data.frame(
+    X0 = c(0.2, 0.3), X1 = c(0.3, 0.2)
+)
+
+# Add rownames for Y 
+row.names(df) <- c("Y0", "Y1")
+
+# Display the table
+pander::pander(df)
+
+```
+
+### Part b
+
+Find E(Y). What is the probability that the ball is
+green?
+
+$E(Y) = \sum y\cdot f_Y(y)$. In our table, we see that Y can take on two values, 0 and 1. We can use the marginal probability to find that  $\sum y\cdot f_Y(y) = (0)(0.5) + (1)(0.5) = 0.5$. Thus, $P(\text{Ball is green}) = 0.5$.
+
+### Part c 
+
+Find Var(Y|X=0), Var(Y|X=1) and Var(Y). Thinking
+of variance as measuring uncertainty, explain
+intuitively why one of these variances is larger than
+the others.
+
+> Intuitively, I would expect the variance of Y without any additional information regarding X to be greater than either variances of Y given X = 0 and X = 1. That is, I expect $max(Var(Y), Var(Y|X=0), Var(Y|X=1)) = Var(Y)$. My reasoning is that knowing something about X reduces our uncertainty of Y. Let's see if I'm correct.
+
+
+\begin{align*}
+Var(Y) &= \sum_{i = 1}^n (Y_i - E[Y])^2\cdot f(Y)\\
+&= (0 -0.5)^2(0.5) + (1-0.5)^2(0.5)\\
+&= 0.25\\
+Var(Y|X=x) &= \sum_{i =1}^n (Y_i - E[Y | x])^2\cdot f(y|x)\\
+E(Y|X=x) &= \sum_{i = 1}^nY_i\cdot f(y|x)\\
+E(Y|X=0) &= (0)(0.4) + (1)(0.6)\\
+&= 0.6\\
+E(Y|X=1) &= (0)(0.6) + (1)(0.4)\\
+&= 0.4\\
+Var(Y|X=0) &= (0 - 0.6)^2(0.4) + (1 - 0.6)^2(0.6)\\
+&= 0.24\\
+Var(Y|X=1) &= (0 - 0.4)^2(0.6) + (1 - 0.4)^2(0.4)\\
+&= 0.24\\
+\end{align*}
+
+
+> As I guessed, knowing something about X does reduce the uncertainty around Y. We see that the conditional variances are both less than the variance of Y, even if it is by a small amount. 
+
+
+### Part d 
+
+Suppose you see that the ball is green. What is the
+probability that the coin turned up tails?
+
+> Let's solve this in terms of X and Y. Thus, we want $P(X=0|Y=1)$, which is easily solved using Bayes' Theorem:
+
+
+\begin{align*}
+P(X=0|Y=1) &= \frac{P(Y=1|X=0)P(X=0)}{P(Y=1|X=0)P(X=0) + P(Y=1|X=1)P(X=1)}\\
+&= \frac{(0.6)(0.5)}{(0.6)(0.5) + (0.4)(0.5)}\\
+&= 0.6
+\end{align*}
+
+
+
+## Problem 3
+
+Let $\theta$ be a Beta(a,b) random variable, and suppose
+that the conditional distribution of X, given that $\theta$, is
+Binomial(n, $\theta$). Find the (marginal) probability mass
+function of X.
+
+> We can solve this by integrating out $\theta$ from the joint distribution. 
+
+\begin{align*}
+f_X(X) &= \int P(X=x|\theta)P(\theta)d\theta\\
+&= \int {n \choose x} \theta^x(1 - \theta)^{n - x}\theta^{a-1}(1-\theta)^{b-1}\frac{\Gamma(a + \beta)}{\Gamma(a)\Gamma(b)}d\theta\\
+&= \int {n \choose x} \theta^{x+a-1}(1 - \theta)^{n + b- x-1}\frac{\Gamma(a + \beta)}{\Gamma(a)\Gamma(b)}d\theta\\
+&= {n \choose x}\frac{\Gamma(a+b)}{\Gamma(a)\Gamma(b)} \int\theta^{x+a-1}(1 - \theta)^{n + b- x-1}d\theta\\
+&= {n \choose x}\frac{\Gamma(a+b)}{\Gamma(a)\Gamma(b)}\frac{\Gamma(x + a - 1)\Gamma(b + n - x - 1)}{\Gamma(a + b + n - 2)}\int \theta^{x+a-1}(1 - \theta)^{n + b- x-1}d\theta \frac{\Gamma(a + b + n - 2)}{\Gamma(x + a - 1)\Gamma(b + n - x - 1)}d\theta\\
+&= {n \choose x}\frac{\Gamma(a+b)}{\Gamma(a)\Gamma(b)}\frac{\Gamma(x + a - 1)\Gamma(b + n - x - 1)}{\Gamma(a + b + n - 2)} (1)\\
+\end{align*}
+
+
+
+## Problem 4
+
+Full conditionals: Let X,Y,Z be random variables
+with joint density (discrete or continuous) p(x, y, z) ∝
+f(x, z)g(y, z)h(z). Show that
+
+(a) p(x|y, z) ∝ f(x, z), i.e. , p(x|y, z) is a function of x
+and z;
+(b) p(y|x, z) $\propto$ g(y, z), i.e., p(y|x, z) is a function of y and z;
+(c) X and Y are conditionally independent given Z.
+
+### Part a 
+
+
+\begin{align*}
+p(x|y, z) &= \frac{p(x, y, z)}{p(y)p(z)}\\
+\implies p(x|y, z) &\propto p(x, y, z)\\
+\implies p(x|y, z) &\propto f(x, z)g(y, z)h(z)\\
+\end{align*}
+
+> Note that the only part of this that depends on X is $f(x, z)$, which implies that $p(x|y, z) \propto f(x, z)$. 
+
+### Part b 
+
+> Let's solve this in the exact same way. 
+
+
+\begin{align*}
+p(y|x, z) &= \frac{p(x, y, z)}{p(x)p(z)}\\
+\implies p(y|x, z) &\propto p(x, y, z)\\
+\implies p(y|x, z) &\propto f(x, z)g(y, z)h(z)\\
+\end{align*}
+
+> Similarly, the only portion of $f(x, z)g(y, z)h(z)$ that depends on y is the term $g(y, z)$. Thus, $p(y|x, z) \propto g(y, z)$. 
+
+### Part c 
+
+> To be conditionally independent, we need to show that $p(x, y|z) \propto p(x|z)p(y|z)$. 
+> 
+> Let's begin with the same approach that we followed in parts a and b. We'll obviously need to get a little fancier for this part, but let's first show that $p(x, y|z) \propto f(x,z)g(y,z):
+
+\begin{align*}
+p(y, x| z) &= \frac{p(x, y, z)}{p(z)}\\
+\implies p(y,x| z) &\propto p(x, y, z)\\
+\implies p(y,x| z) &\propto f(x, z)g(y, z)h(z)\\
+\implies p(y,x| z) &\propto f(x, z)g(y, z)\\
+\end{align*}
+
+> Next, we need to think about $p(x|z)$ and $p(y|z)$. 
+
+
+\begin{align*}
+p(x|z) &= \frac{p(x,z)}{p(z)}\\
+p(x,z) \propto f(x,z)f(z)\\
+\implies p(x|z)\propto f(x,z)\\
+p(y|z) &= \frac{p(y,z)}{p(z)}\\
+p(y,z) \propto g(y,z)f(z)\\
+\implies p(y|z)\propto g(y,z)\\
+\end{align*}
+
+> Combining these results, we see that $p(x, y | z)\propto f(x,z)g(y,z)\implies p(x, y |z) \propto p(x|z)p(y|z)$. Thus, x and y are conditionally independent. 
+
+
+## Part 5
+
+PH 3.1
+
+
+### Part a
+
+Assume Y1, . . . , Y100 are, conditional on θ, i.i.d. binary random variables with expectation θ. Write down the joint distribution of Pr(Y1 = y1, . . . , Y100 = y100|θ) in a compact form. Also write down the form of $Pr(\sum PYi = y|θ)$.
+
+
+\begin{align*}
+f(y_1, ..., y_{100}|\theta) &= \prod_{i=1}^{100}f(y_i|\theta)\\
+&= \theta^{\sum_{i = 1}^{100}y_i}(1 - \theta)^{n - \sum_{i = 1}^{100}y_i}\\
+P\left(\sum_{i = 1}^{100}Y = y_i|\theta\right) &= {n \choose \sum y_i} \theta^{\sum y_i}(1 - \theta)^{n - \sum y_i}
+\end{align*}
+
+
+
+### Part b 
+
+For the moment, suppose you believed that θ ∈ {0.0, 0.1, . . . , 0.9, 1.0}. Given that the results of the survey were $\sum Yi = 57$, compute $Pr(\sum Yi = 57|θ)$ for each of these 11 values of θ and plot these probabilities as a function of θ.
+
+
+```{r warning=FALSE, message=FALSE}
+###################################### R ######################################
+library(ggplot2)
+
+# Define a function that will spit out the probability we're interested in
+# computing
+p_y_theta <- function(theta, n, y) {
+    # y: a sum of bernouli trials
+    # theta: a vector of values between 0 and 1 (can be length 1)
+    # n: number of bernouli trials
+    return(choose(n, y) * theta**y * (1 - theta)**(n - y))
+}
+
+# Define our primary input values (theta) and other given values (n, y)
+theta <- seq(0, 1, length.out = 11)
+n <- 100
+y <- 57
+
+# Figure out where the highest probability lies
+max_prob_theta <- theta[
+    which(p_y_theta(theta, n, y) == max(p_y_theta(theta, n, y)))
+]
+# Plot the outputs as nice and pretty as possible
+plot_data <- data.frame(theta = theta, y = p_y_theta(theta, n, y))
+ggplot(plot_data, aes(x = theta, y = y)) +
+    geom_point(col = "skyblue", size = 2) +
+    geom_line(col = "skyblue", lwd = 0.5, lty = 2) +
+    geom_vline(xintercept = max_prob_theta, col = "firebrick", lwd = 1, lty = 2) +
+    labs(title = "Pr(sum(Y) = 57 | theta)", x = "Theta", y = "Probability") +
+    theme_bw() +
+    theme(
+        text = element_text(family = "serif"),
+        plot.title = element_text(hjust = 0.5, face = "bold", size = 14)
+    )
+```
+
+> The plot shows a maximum at `r max_prob_theta`. 
+
+### Part c 
+
+Now suppose you originally had no prior information to believe one of these θ-values over another, and so Pr(θ = 0.0) = Pr(θ = 0.1) = · · · = Pr(θ = 0.9) = Pr(θ = 1.0). Use Bayes’ rule to compute $p(θ| \sum Yi = 57)$ for each θ-value. Make a plot of this posterior distribution as a function of θ.
+
+> I want to note that I used generative AI to assist me with the following code for this problem. I derived the the math to implement, and ChatGPT assisted with the coding: 
+
+```{r}
+###################################### R ######################################
+
+# Define the function to compute posterior probability using Bayes' theorem
+p_theta_bayes <- function(theta, n, y) {
+    # Compute P(Y = 57 | θ) for each θ
+    likelihood <- choose(n, y) * theta^y * (1 - theta)^(n - y)
+
+    # Prior probabilities (uniform over 11 values)
+    prior <- rep(1 / length(theta), length(theta))
+
+    # Compute P(Y = 57) as the sum of likelihood * prior over all θ
+    p_y <- sum(likelihood * prior)
+
+    # Compute posterior using Bayes' rule
+    posterior <- (likelihood * prior) / p_y
+
+    return(posterior)
+}
+
+# Define theta values and known values of n and y
+theta <- seq(0, 1, length.out = 11)
+n <- 100
+y <- 57
+
+# Compute the posterior probabilities
+posterior_probs <- p_theta_bayes(theta, n, y)
+max_prob_theta <- theta[
+    which(posterior_probs == max(posterior_probs))
+]
+
+# Plot the posterior distribution
+plot_data <- data.frame(theta = theta, posterior = posterior_probs)
+
+ggplot(plot_data, aes(x = theta, y = posterior)) +
+    geom_point(col = "skyblue", size = 2) +
+    geom_line(col = "skyblue", lwd = 0.5, lty = 2) +
+    geom_vline(col = "firebrick", lwd = 0.75, lty = 2, xintercept = max_prob_theta) +
+    labs(
+        title = "Posterior Probability Distribution P(θ | Y = 57)",
+        x = "Theta", y = "Posterior Probability"
+    ) +
+    theme_bw() +
+    theme(
+        text = element_text(family = "serif"),
+        plot.title = element_text(hjust = 0.5, face = "bold", size = 14)
+    )
+```
+
+> Max at $\theta$ = `r max_prob_theta`. 
+
+
+### Part d 
+
+Now suppose you allow θ to be any value in the interval [0, 1]. Using
+the uniform prior density for θ, so that p(θ) = 1, plot the posterior
+density $p(θ) × Pr(\sum Yi = 57|θ)$ as a function of θ.
+
+```{r}
+###################################### R ######################################
+library(ggplot2)
+
+# Define function to compute posterior density
+posterior_density <- function(theta_vals, n, y) {
+    # Compute likelihood P(Y = 57 | θ)
+    likelihood <- choose(n, y) * theta_vals^y * (1 - theta_vals)^(n - y)
+
+    # Since prior is uniform (1), posterior is proportional to likelihood
+    posterior <- likelihood
+
+    return(posterior)
+}
+
+# Define a continuous range of theta values
+theta_vals <- seq(0, 1, length.out = 1000) # More points for smooth curve
+n <- 100
+y <- 57
+
+# Compute posterior density
+posterior_vals <- posterior_density(theta_vals, n, y)
+max_prob_theta <- theta_vals[
+    which(posterior_vals == max(posterior_vals))
+]
+
+# Normalize for better visualization (optional, but makes y-axis interpretable)
+posterior_vals <- posterior_vals / max(posterior_vals)
+
+# Plot the posterior density
+plot_data <- data.frame(theta = theta_vals, posterior = posterior_vals)
+
+ggplot(plot_data, aes(x = theta, y = posterior)) +
+    geom_line(col = "skyblue", lwd = 1) +
+    geom_vline(col = "firebrick", lwd = 0.75, lty = 2, xintercept = max_prob_theta) +
+    labs(
+        title = "Posterior Density p(θ | Y = 57)",
+        x = "Theta", y = "Density (unnormalized)"
+    ) +
+    theme_bw() +
+    theme(
+        text = element_text(family = "serif"),
+        plot.title = element_text(hjust = 0.5, face = "bold", size = 14)
+    )
+```
+
+> Max at $\theta$ = `r max_prob_theta`. 
+
+
+### Part e 
+
+
+```{r}
+###################################### R ######################################
+
+# Define a function to return a posterior Beta(1+57, 1+100-57) density given
+# an input of theta values
+posterior_beta_density <- function(theta_vals) {
+    return(dbeta(theta_vals, 1 + 57, 1 + 100 - 57))
+}
+
+# Get a set of density values like we did in part d
+posterior_probs <- posterior_beta_density(theta_vals)
+max_prob_theta <- theta_vals[
+    which(posterior_probs == max(posterior_probs))
+]
+
+# Combine into a dataframe
+plot_data <- data.frame(theta = theta_vals, density = posterior_probs)
+
+# Now let's get back to plotting!
+ggplot(plot_data, aes(x = theta, y = density)) +
+    geom_line(col = "skyblue", lwd = 1) +
+    geom_vline(col = "firebrick", lwd = 0.75, lty = 2, xintercept = max_prob_theta) +
+    labs(
+        title = "Posterior Density Beta(1+57, 100+1-57)",
+        x = "Theta", y = "Density"
+    ) +
+    theme_bw() +
+    theme(
+        text = element_text(family = "serif"),
+        plot.title = element_text(hjust = 0.5, face = "bold", size = 14)
+    )
+```
+
+> Max at $\theta$ = `r max_prob_theta`. 
+
+
+> I'm honestly pretty surprised that they have all given the same (roughly) optimal values of $\theta$. My hunch is that if I had made the first two plots as granular as the second two, I would see this same $\theta$ value of 0.569. We've used four different methods and seem to get the same results consistently. 
+
+
+## Part 6 
+
+
+PH 3.2
+
+
+Sensitivity analysis: It is sometimes useful to express the parameters a and b in a beta distribution in terms of θ0 = a/(a + b) and n0 = a + b, so that a = θ0n0 and b = (1 − θ0)n0. Reconsidering the sample survey
+data in Exercise 3.1, for each combination of θ0 ∈ {0.1, 0.2, . . . , 0.9} and n0 ∈ {1, 2, 8, 16, 32} find the corresponding a, b values and compute Pr(θ > 0.5| $\sum$ Yi = 57) using a beta(a, b) prior distribution for θ. Display the results with a contour plot, and discuss how the plot could be used to explain to someone whether or not they should believe that θ > 0.5, based on the data that $\sum$ Yi = 57.
+
+
+
+```{r}
+############################# R ########################################
+
+library(ggplot2)
+library(dplyr)
+
+# Define prior values
+theta0_values <- seq(0.1, 0.9, by = 0.1)
+n0_values <- c(1, 2, 8, 16, 32)
+
+# Create an empty dataframe to store results
+results <- expand.grid(theta0 = theta0_values, n0 = n0_values)
+
+# Observed data
+y_sum <- 57  
+n <- 100     
+
+# Compute probability P(θ > 0.5) for each combination
+results <- results %>%
+  rowwise() %>%
+  mutate(
+    a = theta0 * n0,
+    b = (1 - theta0) * n0,
+    a_post = a + y_sum,
+    b_post = b + (n - y_sum),
+    prob_theta_greater_05 = 1 - pbeta(0.5, a_post, b_post)
+  )
+
+# Plot using ggplot2
+ggplot(results, aes(x = theta0, y = n0, z = prob_theta_greater_05)) +
+  geom_contour_filled() +
+  labs(
+    title = "Contour Plot of P(θ > 0.5) Given Prior (theta0, n0)",
+    x = "theta0",
+    y = "n0"
+  ) +
+  theme_minimal() +
+    theme(
+      text = element_text(family = "serif"),
+      plot.title = element_text(hjust = 0.5, face = "bold", size = 14)
+  )
+
+```
+
+
+> The contour plot shows the probability that $\theta$ is greater than 0.5 given the data. With higher values of $\theta_0$, we see that our posterior probabilities are also higher. However, with lower values of $\theta_0$, $n_0$, which represents our prior certainty, is inversely related. That is, if I'm much more certain that $\theta_0 < 0.5$, then my posterior probability that $\theta > 0.5$ is lower. This should be intuitive and matches what we see on the plot. 
+
+
+
+

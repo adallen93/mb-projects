@@ -1,0 +1,87 @@
+---
+title: "Week 1: January 8, 2025"
+---
+
+
+## Goals
+
+- Introduce the concepts of correlated data, describe the basic structures of correlated data, explain how correlation arises in common study designs
+- Contrast the behavior of correlated data with uncorrelated data and show how the behavior of correlated dat influences design and statistiical analysis
+- Show how to analyze correlated data using statistical computing packages such as Stata, R or SAS
+- Introduce more advanced topics i nthe analysis o f correlated data (time permitting)
+
+## Old Dog, New Tricks
+
+- Recording of lectures: 
+  - Audio and computer video on Canvas
+  - Posted approximately 24 hours after class
+- No guarantees
+  - Technological difficulties do happen
+- Please do try to attend all lectures
+  - You can't ask questions of the lecture
+
+## Textbooks
+
+- Recommended
+  - Fitzmaurie G, Laird NM, Ware JH. (2011) Applied Longitudinal Analysis, 2nd Ed., Wiley
+  - Verbeke G, Molenberghs G
+  - Diggle PJ, Heagerty P, Liang K-Y, Zeger SL. (2003) Analysis of Longitudinal Data, 2nd Ed., Oxford University Press
+
+## Overarching Theme
+
+"Everything is regression."
+
+- S. Emerson
+- We're interested in associations in this class
+
+## Computer Software
+
+- Used extensively for data analysis
+- Students may use any program that wil do what is required, however
+  - Stat and R will be used predominantly
+  - R is free, but harder to use than Stat and SAS
+    - Stat and R functions will be provided on the website
+  - Help will presume the use of R or Stat
+  - Some packages may not compute robust standard errors
+
+- Things to keep in mind:
+  - These software are designed for people who already know statistics, but do not want to write basic functions
+  - They try to be all things to al people 
+
+## Guiding Principles
+
+- This is a course in biostatistics, not statistical software
+
+## Assignments
+
+- Approximately weekly: analyses of real data
+  - Questions directed toward specific analyses
+  - Work handed in is expected to be organized scientifically
+
+## Errors to Avoid
+
+- Unedited code shouldn't be handed in
+- Any assignments that are handed in should be your own work
+
+## Homework Keys
+
+- Keys to the homework assignments will be generally be available on the web pages
+  - Depends on whether is is new informaiton
+  - His answers typically go beyond what he expected you to do 
+  - You are responsible for any new information that he provides in the homework keys, even if that information is not otherwise presented in class
+
+## Quizzes
+
+- Lecture may be used to 
+  - Take brief quizzes on the subject matter
+  - Quizzes will also be given online/timed
+
+## Grading
+
+- 25% Homeworks + Quizzes
+  - Drop lowest grade
+- 50% Two "midterm" exams (25% each)
+- 25% Final Exam
+  - All exams are in class, closed note, closed book
+  - 8.5 X 11 inch "crib sheet" permitted (front and back)
+- Exams are technically "cumulative," but it focuses on the third of the course that corresponds to the course

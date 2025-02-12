@@ -1,0 +1,54 @@
+---
+
+---
+
+## Model Assumptions
+
+- Generalized estimating equations (GEE-1)
+  - Model marginal means $\mu_{ij} = E(Y_{ij})
+    - The $\beta$'s keep their same interpretations as in the independent data models
+  - Correlation is "nuisance" 
+    - Must be taken into account for inference on $\beta$s 
+    - Not of scientific interest
+    - Efficiency of estimation of correlation parameters is not an issue 
+
+## Interpreting Parameters 
+
+### Three Models 
+
+
+#### Model 1 
+
+$E(Y_i |X_i) = \beta_0 + \beta_1 X+i$
+
+#### Model 2 
+
+$E(Y_{ij} | X_i) = \beta_0 + \beta_1 X_i$
+
+
+#### Model 3 (longitudinal)
+
+$E(Y_{ij}|T_{ij}) = \beta_0  + \beta_1 X_{ij}$
+
+- i = 1,..., N
+- j = 1, 2
+- What's the interpretation of $\beta_1$? 
+
+## Working Specifications
+
+- Indpendence
+- Exchangeable
+- Autoregressive
+- Unstructured 
+
+## When to Use (and to Not Use) GEE 
+
+- Is the key assumption exceptional to GEE?
+- What are the consequences of 
+  - Omitting an important predictor variable?
+  - Including an unnecessary one?
+- Validity of inference (for GEE)
+  - Sample size: N >> n_i
+  - Generally poor inference if N < 20
+  - Other methods are generally preferred in this case 
+

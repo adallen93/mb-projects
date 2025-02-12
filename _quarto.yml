@@ -3,7 +3,7 @@ project:
   output-dir: docs
 
 website:
-  title: "Austin's MB Projects"
+  title: "BBSA - Student Resources"
   navbar:
     left:
       - href: index.qmd
